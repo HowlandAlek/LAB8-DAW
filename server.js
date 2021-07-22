@@ -1,11 +1,11 @@
 //Dependencias
 const express = require("express");
 const morgan = require("morgan");
-let path = require("path");
+var path = require("path");
 
 // Creación de servidor
 const app = express();
-let port = process.env.PORT || 3000;
+var port = process.env.PORT || 3000;
 
 // Parser
 app.use(express.urlencoded({ extended: true }));
@@ -15,8 +15,8 @@ app.use(express.json());
 app.use(morgan("dev"));
 
 // Data
-let reservations = [];
-let waitingList = [];
+var tables = [];
+var waitlist = [];
 
 // Rutas
 app.get("/", (req, res) => {
@@ -33,11 +33,24 @@ app.get("/reserve", (req, res) => {
 
 // APIs
 app.get("/api/tables", (req, res) => {
-	return res.json(reservations);
+	return res.json(tables);
 });
 
 app.get("/api/waitlist", (req, res) => {
-	return res.json(waitingList);
+	return res.json(waitlist);
+});
+
+app.post("/api/tables", (req, res) => {
+	var newReservation = req.body;
+
+	// Validaciones
+	if (tables.length < 5) {
+		tables.push(newReservation);
+		res.send(true);
+	} else {
+		waitlist.push(newReservation);
+		res.send(false);
+	}
 });
 
 // Listener
